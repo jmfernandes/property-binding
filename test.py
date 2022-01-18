@@ -3,8 +3,12 @@ from binding import Observer
 
 
 class Coordinates(metaclass=Observer):
-    x = -1
+    x = None
     y = None
+
+    def __init__(self, a, b):
+        self.x = a
+        self.y = b
 
 
 def global_listener(one, two, three, four):
@@ -14,7 +18,7 @@ def global_listener(one, two, three, four):
 class ObserverTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.coordinates = Coordinates()
+        self.coordinates = Coordinates(-1, 0)
         self.one = None
         self.two = None
         self.three = None
@@ -22,7 +26,7 @@ class ObserverTest(unittest.TestCase):
 
     def test_initialization(self):
         self.assertEqual(self.coordinates.x, -1)
-        self.assertEqual(self.coordinates.y, None)
+        self.assertEqual(self.coordinates.y, 0)
 
     def test_metaclass(self):
         name = self.coordinates.__class__.__name__
@@ -49,11 +53,11 @@ class ObserverTest(unittest.TestCase):
         self.assertEqual(self.four, None)
         self.coordinates.bind_to(self.listener)
         self.coordinates.x = 1
-        #self.assertEqual(self.one, self.coordinates)
+        self.assertEqual(self.one, self.coordinates)
         self.assertEqual(self.two, "x")
         self.assertEqual(self.three, -1)
         self.assertEqual(self.four, 1)
-        self.coordinates.unbind_to(self.listener)
+        self.coordinates.unbind_to()
 
     def listener(self, one, two, three, four):
         self.one = one
