@@ -46,6 +46,17 @@ class ObserverTest(unittest.TestCase):
         listener = self.coordinates.get_listener()
         self.assertEqual(listener, None)
 
+    def test_get_listener(self):
+        self.coordinates.bind_to(global_listener)
+        self.assertEqual(self.coordinates.get_listener(), global_listener)
+        self.coordinates.unbind_to()
+
+    def test_has_listener(self):
+        self.assertEqual(self.coordinates.has_listener(), False)
+        self.coordinates.bind_to(global_listener)
+        self.assertEqual(self.coordinates.has_listener(), True)
+        self.coordinates.unbind_to()
+
     def test_callback(self):
         self.assertEqual(self.one, None)
         self.assertEqual(self.two, None)
