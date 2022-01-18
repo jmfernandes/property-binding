@@ -13,9 +13,9 @@ class Coordinates(metaclass=Observer):
         self.y = y
 
 
-def listener(instance, property_name, new_value, old_value):
+def listener(instance, property_name, old_value, new_value):
     """Every time a property in Coordinates is changed, listener will be called."""
-    print(f"listener triggered on property -> {property_name}")
+    print(f"listener triggered on property -> {property_name}. \n old_value: {old_value} \n new_value: {new_value}")
 
 
 def main():
@@ -23,11 +23,11 @@ def main():
     coord = Coordinates(2, 3)
     # bind a function to the specific instance. An instance can be bound to an unlimited amount of functions.
     coord.bind_to(listener)
-
     print(f"beginning coordinates are <x: {coord.x}, y: {coord.y}>")
     coord.x = 1
     coord.y = 5
     print(f"after event coordinates are <x: {coord.x}, y: {coord.y}>")
+    coord.unbind_to()
 
 
 if __name__ == "__main__":
