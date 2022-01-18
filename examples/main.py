@@ -4,13 +4,13 @@ from binding import Observer
 class Coordinates(metaclass=Observer):
     """Any variable defined with two underscores will automatically be given a property whose name is the same as
     the variable but without the underscores."""
-    __x = None
-    __y = None
+    x = None
+    y = None
 
     def __init__(self, x, y):
         # initializing the variables is completely optional.
-        self.__x = x
-        self.__y = y
+        self.x = x
+        self.y = y
 
 
 def listener(instance, property_name, new_value, old_value):

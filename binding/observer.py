@@ -11,8 +11,8 @@ class Observer(type):
     """Meta class for automatically adding properties and property binding for private variables."""
 
     def __new__(mcs, class_name: str, bases: tuple, attrs: dict) -> type:
-        for item in [x.split(f"_{class_name}__")[1] for x in attrs if x.startswith(f"_{class_name}__")]:
-            attrs[item] = ObserverProperty(item, class_name, f"I'm the '{item}' property.")
+        for name, value in ((k, v) for k, v in attrs.items() if type(v) == type(None)):
+            attrs[name] = ObserverProperty(name, class_name, f"I'm the '{name}' property.")
         attrs[f"_{class_name}__observers"] = []
         attrs["bind_to"] = mcs.bind_to
         attrs["unbind_to"] = mcs.unbind_to
@@ -49,11 +49,11 @@ class Observer(type):
 
 class ObserverProperty:
     """Class for defining a custom property object."""
+    stored_value = None
 
     def __init__(self, name: str, class_name: str, doc: Optional[str] = ...) -> None:
         self.name = name
-        self.observer_name = f"_{class_name}__observers"
-        self.value_name = f"_{class_name}__{name}"
+        self.observer_list = f"_{class_name}__observers"
         self.__doc__ = doc
 
     def __set__(self, obj: Any, value: Any) -> None:
@@ -62,10 +62,10 @@ class ObserverProperty:
 
         Will set the property value and call any callback funtion.
         """
-        old_value = getattr(obj, self.value_name)
+        old_value = self.stored_value
         if value != old_value:
-            setattr(obj, self.value_name, value)
-            callback_functions = getattr(obj, self.observer_name)
+            self.stored_value = value
+            callback_functions = getattr(obj, self.observer_list)
             for callback in callback_functions:
                 callback(obj, self.name, old_value, value)
 
@@ -73,4 +73,4 @@ class ObserverProperty:
         """
         Returns the property value.
         """
-        return getattr(obj, self.value_name)
+        return self.stored_value
