@@ -8,6 +8,8 @@ Simply have your class inherit the 'Observer' class as a meta class. Any class v
 
 Example
 ```python
+from binding import Observer
+
 Class Coordinates(metaclass=Observer):
     # These two class variables (lat and lon) will be turned into properties.
     # Property values are specific to each instance so you can create as many
