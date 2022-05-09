@@ -1,5 +1,7 @@
 from inspect import isclass
 
+from binding.exceptions import CannotInvokeOnInstance
+
 def static_method_decorator(func):
     """Decorator function will raise error if obj.func() is called where obj is a class instance."""
     def inner_function(*args, **kwargs):

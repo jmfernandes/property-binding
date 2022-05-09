@@ -1,7 +1,7 @@
 from inspect import getfullargspec
 from typing import Any, Optional, Callable
 
-from binding.exceptions import CannotInvokeOnInstance, WrongNumberOfArguments
+from binding.exceptions import WrongNumberOfArguments
 from binding.decorators import static_method_decorator
 
 class Observer(type):
