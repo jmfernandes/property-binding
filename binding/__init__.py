@@ -1,1 +1,1 @@
-from .observer import Observer
+from binding.observer import Observer

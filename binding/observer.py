@@ -1,10 +1,8 @@
 from inspect import getfullargspec
 from typing import Any, Optional, Callable
 
-class WrongNumberOfArguments(TypeError):
-    """Exception is raised when the wrong number of arguments is used."""
-    pass
-
+from binding.exceptions import CannotInvokeOnInstance, WrongNumberOfArguments
+from binding.decorators import static_method_decorator
 
 class Observer(type):
     """Meta class for automatically adding properties and property binding for private variables."""
@@ -39,9 +37,10 @@ class Observer(type):
         setattr(new_cls, 'has_listeners', mcs.has_listeners)
         return new_cls
 
-    def bind_to(cls, callback: Callable[[Any, str, Any, Any], None]) -> None:
+    @static_method_decorator
+    def bind_to(cls: Any, callback: Callable[[Any, str, Any, Any], None]) -> None:
         """
-        bind_to(callback) -> None
+        bind_to(cls, callback) -> None
 
         Pass a function to bind_to without the parenthesis. Function must define four parameters in its definition.
         """
@@ -50,26 +49,31 @@ class Observer(type):
             raise WrongNumberOfArguments("bind_to only accepts a function that has exactly 4 parameters for instance, "
                                          "property_name, new_value, and old_value, or 5 arguments with the first, "
                                          "argument being 'self'.")
-        observers = getattr(cls, f"_{cls.__class__.__name__}__observers")
+        observers = getattr(cls, f"_{cls.__name__}__observers")
         observers.append(callback)
 
-    def unbind_to(cls: Any) -> None:
+    @static_method_decorator
+    def unbind_to(cls: Any, callback: Callable[[Any, str, Any, Any], None]) -> None:
         """
         unbind_to() -> None
 
         Pass a function to unbind_to without the parenthesis. Function must define four parameters in its definition.
         """
-        observers = getattr(cls, f"_{cls.__class__.__name__}__observers")
-        if len(observers) > 0:
-            observers.pop()
+        observers = getattr(cls, f"_{cls.__name__}__observers")
+        try:
+            observers.remove(callback)
+        except ValueError:
+            raise ValueError(f"{callback} is not currently bound to class: {cls.__name__}")
 
+    @static_method_decorator
     def get_listeners(cls: Any) -> tuple:
         """Returns the callback functions."""
-        return next(iter(getattr(cls, f"_{cls.__class__.__name__}__observers")), None)
+        return next(iter(getattr(cls, f"_{cls.__name__}__observers")), None)
 
+    @static_method_decorator
     def has_listeners(cls: Any) -> tuple:
         """Returns the callback functions."""
-        return len(getattr(cls, f"_{cls.__class__.__name__}__observers")) > 0
+        return len(getattr(cls, f"_{cls.__name__}__observers")) > 0
 
 
 class ObserverProperty:

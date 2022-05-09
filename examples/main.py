@@ -37,11 +37,13 @@ def main():
     other_coord = Coordinates(4,5)
     john = People("John")
     # bind a function to the specific instance. An instance can be bound to an unlimited amount of functions.
-    coord.bind_to(listener)
+    Coordinates.bind_to(Coordinates, listener)
     print(f"beginning coordinates are <x: {coord.x}, y: {coord.y}>")
     print(f"beginning coordinates are <x: {other_coord.x}, y: {other_coord.y}>")
     coord.x = -1
     coord.y = -5
+    People.bind_to(People, listener)
+    john.name = "larry"
     coord.x = -2
     other_coord.x = -6
     # coord.unbind_to()
