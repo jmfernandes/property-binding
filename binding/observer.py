@@ -7,7 +7,7 @@ from binding.decorators import static_method_decorator
 class Observer(type):
     """Meta class for automatically adding properties and property binding for private variables."""
 
-    def __new__(mcs, class_name: str, bases: tuple, attrs: dict, **kwargs: dict) -> type:
+    def __new__(mcs: Any, class_name: str, bases: tuple, attrs: dict, **kwargs: dict) -> type:
         # Create a new class and store the original __init__ so it can be called later.
         new_cls = type.__new__(mcs, class_name, bases, attrs, **kwargs)
         user_init = new_cls.__init__
@@ -68,10 +68,14 @@ class Observer(type):
     @static_method_decorator
     def get_listeners(cls: Any) -> tuple:
         """Returns the callback functions."""
-        return next(iter(getattr(cls, f"_{cls.__name__}__observers")), None)
+        listeners = getattr(cls, f"_{cls.__name__}__observers")
+        if not listeners:
+            return None
+        else:
+            return tuple(listeners)
 
     @static_method_decorator
-    def has_listeners(cls: Any) -> tuple:
+    def has_listeners(cls: Any) -> bool:
         """Returns the callback functions."""
         return len(getattr(cls, f"_{cls.__name__}__observers")) > 0
 
